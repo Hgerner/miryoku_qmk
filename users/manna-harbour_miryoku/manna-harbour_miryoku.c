@@ -6,12 +6,203 @@
 #include QMK_KEYBOARD_H
 
 #include "manna-harbour_miryoku.h"
+#include "keymap_swedish.h"
+
+
+#if 0
+void keyboard_post_init_user(void) {
+  // Customise these values to desired behaviour
+  //debug_enable=true;
+  //debug_matrix=true;
+  //debug_keyboard=true;
+  //debug_mouse=true;
+}
+
+const uint16_t PROGMEM test_combo1[] = {SE_L,               SE_U, COMBO_END};
+const uint16_t PROGMEM test_combo2[] = {RSFT_T(KC_N),       LCTL_T(KC_E), COMBO_END};
+const uint16_t PROGMEM test_combo3[] = {SE_H,               KC_COMM, COMBO_END};
+
+combo_t key_combos[COMBO_COUNT] = {
+    COMBO(test_combo1, SE_ARNG),
+    COMBO(test_combo2, SE_ADIA),
+    COMBO(test_combo3, SE_ODIA),
+
+
+};
+#endif
+
+enum {
+    TD_WS1 = 0,
+    TD_WS2,
+    TD_WS3,
+    TD_WS4,
+    TD_WS5,
+    TD_WS6,
+    TD_SCREEN1,
+    TD_SCREEN2,
+    TD_SCREEN3,
+    TD_FOCUS_SWAP_MASTER
+};
+
+enum custom_keycodes {
+    QUOT_DQUO = SAFE_RANGE,
+    PLUS_MINUS,
+    ASTR_SLSH,
+    COMM_EQL,
+    SLSH_BSLS
+
+};
+
+bool caps_word_press_user(uint16_t keycode) {
+  switch (keycode) {
+    // Keycodes that continue Caps Word, with shift applied.
+    case SE_A ... SE_Z:
+    case SE_ARNG:
+    case SE_ADIA:
+    case SE_ODIA:
+        add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to the next key.
+      return true;
+
+    // Keycodes that continue Caps Word, without shifting.
+    case SE_1 ... SE_0:
+    case KC_BSPC:
+    case KC_DEL:
+    case SE_MINS:
+    case SE_UNDS:
+      return true;
+
+    default:
+      return false;  // Deactivate Caps Word.
+  }
+}
+
+typedef struct {
+    uint16_t tap;
+    uint16_t hold;
+    uint16_t held;
+} tap_dance_tap_hold_t;
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    
+    uint16_t shifted = 0;
+    uint16_t regular = 0;
+
+    qk_tap_dance_action_t *action;
+    switch (keycode) {
+        case TD(TD_WS1):
+        case TD(TD_WS2):
+        case TD(TD_WS3):
+        case TD(TD_WS4):
+        case TD(TD_WS5):
+        case TD(TD_WS6):
+        case TD(TD_SCREEN1):
+        case TD(TD_SCREEN2):
+        case TD(TD_SCREEN3):
+        case TD(TD_FOCUS_SWAP_MASTER):
+            // list all tap dance keycodes with tap-hold configurations
+            action = &tap_dance_actions[TD_INDEX(keycode)];
+            if (!record->event.pressed && action->state.count && !action->state.finished) {
+                tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)action->user_data;
+                tap_code16(tap_hold->tap);
+            }
+        break;
+        case QUOT_DQUO:
+            if (!shifted) {
+                regular = SE_QUOT; 
+                shifted = SE_DQUO; 
+            }
+        case ASTR_SLSH:
+            if (!shifted) {
+                regular = SE_ASTR; 
+                shifted = SE_SLSH; 
+            }
+        case PLUS_MINUS:
+            if (!shifted) {
+                regular = SE_PLUS; 
+                shifted = SE_MINS; 
+            }
+        case COMM_EQL:
+            if (!shifted) {
+                regular = SE_COMM; 
+                shifted = SE_EQL; 
+            }
+        case SLSH_BSLS:
+            if (!shifted) {
+                regular = SE_SLSH;
+                shifted = SE_BSLS;
+            }
+            const uint8_t mods = get_mods();
+            if (record->event.pressed) {
+                if ((mods) & MOD_MASK_SHIFT) {
+                    unregister_code16(KC_LSFT);
+                    tap_code16(shifted); 
+                    register_code16(KC_LSFT);
+                }
+                else {
+                    tap_code16(regular);
+                }
+            }
+
+            return false;
+        break;
+    }
+   
+    return true;
+}
+
+
+void tap_dance_tap_hold_finished(qk_tap_dance_state_t *state, void *user_data) {
+    tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)user_data;
+
+    if (state->pressed) {
+        if (state->count == 1
+#ifndef PERMISSIVE_HOLD
+            && !state->interrupted
+#endif
+        ) {
+            register_code16(tap_hold->hold);
+            tap_hold->held = tap_hold->hold;
+        } else {
+            register_code16(tap_hold->tap);
+            tap_hold->held = tap_hold->tap;
+        }
+    }
+}
+
+void tap_dance_tap_hold_reset(qk_tap_dance_state_t *state, void *user_data) {
+    tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)user_data;
+
+    if (tap_hold->held) {
+        unregister_code16(tap_hold->held);
+        tap_hold->held = 0;
+    }
+}
+
+#define ACTION_TAP_DANCE_TAP_HOLD(tap, hold) \
+    { .fn = {NULL, tap_dance_tap_hold_finished, tap_dance_tap_hold_reset}, .user_data = (void *)&((tap_dance_tap_hold_t){tap, hold, 0}), }
+
+qk_tap_dance_action_t tap_dance_actions[] = {
+    [TD_WS1] = ACTION_TAP_DANCE_TAP_HOLD(WS1, WS1_SFT),
+    [TD_WS2] = ACTION_TAP_DANCE_TAP_HOLD(WS2, WS2_SFT),
+    [TD_WS3] = ACTION_TAP_DANCE_TAP_HOLD(WS3, WS3_SFT),
+    [TD_WS4] = ACTION_TAP_DANCE_TAP_HOLD(WS4, WS4_SFT),
+    [TD_WS5] = ACTION_TAP_DANCE_TAP_HOLD(WS5, WS5_SFT),
+    [TD_WS6] = ACTION_TAP_DANCE_TAP_HOLD(WS6, WS6_SFT),
+    [TD_SCREEN1] = ACTION_TAP_DANCE_TAP_HOLD(SCREEN1_GO, SCREEN1_MOVE),
+    [TD_SCREEN2] = ACTION_TAP_DANCE_TAP_HOLD(SCREEN2_GO, SCREEN2_MOVE),
+    [TD_SCREEN3] = ACTION_TAP_DANCE_TAP_HOLD(SCREEN3_GO, SCREEN3_MOVE),
+    [TD_FOCUS_SWAP_MASTER] = ACTION_TAP_DANCE_TAP_HOLD(MASTER_FOCUS, MASTER_SWAP),
+};
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define MIRYOKU_X(LAYER, STRING) [U_##LAYER] = U_MACRO_VA_ARGS(MIRYOKU_LAYERMAPPING_##LAYER, MIRYOKU_LAYER_##LAYER),
 MIRYOKU_LAYER_LIST
 #undef MIRYOKU_X
 };
+
+
+
 
 #if defined (MIRYOKU_KLUDGE_THUMBCOMBOS)
 const uint16_t PROGMEM thumbcombos_base_right[] = {LT(U_SYM, KC_ENT), LT(U_NUM, KC_BSPC), COMBO_END};

@@ -16,13 +16,41 @@ MIRYOKU_LAYER_LIST
 
 #define U_MACRO_VA_ARGS(macro, ...) macro(__VA_ARGS__)
 
+#define MIRYOKU_CLIPBOARD_WIN
+
 #if !defined (MIRYOKU_MAPPING)
-  #define MIRYOKU_MAPPING LAYOUT_miryoku
+  #define MIRYOKU_MAPPING LAYOUT_split_3x6_3
 #endif
 
 #define U_NP KC_NO // key is not present
 #define U_NA KC_NO // present but not available for use
 #define U_NU KC_NO // available but not used
+
+
+#define WS1 LGUI(KC_1)
+#define WS2 LGUI(KC_2)
+#define WS3 LGUI(KC_3)
+#define WS4 LGUI(KC_4)
+#define WS5 LGUI(KC_5)
+#define WS6 LGUI(KC_6)
+
+#define WS1_SFT LGUI(LSFT(KC_1))
+#define WS2_SFT LGUI(LSFT(KC_2))
+#define WS3_SFT LGUI(LSFT(KC_3))
+#define WS4_SFT LGUI(LSFT(KC_4))
+#define WS5_SFT LGUI(LSFT(KC_5))
+#define WS6_SFT LGUI(LSFT(KC_6))
+
+#define SCREEN1_GO LGUI(LSFT(LCTL(KC_1)))
+#define SCREEN2_GO LGUI(LSFT(LCTL(KC_2)))
+#define SCREEN3_GO LGUI(LSFT(LCTL(KC_3)))
+
+#define SCREEN1_MOVE LGUI(LSFT(LALT(LCTL(KC_1))))
+#define SCREEN2_MOVE LGUI(LSFT(LALT(LCTL(KC_2))))
+#define SCREEN3_MOVE LGUI(LSFT(LALT(LCTL(KC_3))))
+
+#define MASTER_FOCUS LGUI(LCTL(KC_LEFT))
+#define MASTER_SWAP  LGUI(LCTL(KC_BSPC))
 
 #if defined (MIRYOKU_CLIPBOARD_FUN)
   #define U_RDO KC_AGIN
@@ -42,10 +70,4 @@ MIRYOKU_LAYER_LIST
   #define U_CPY C(KC_C)
   #define U_CUT C(KC_X)
   #define U_UND C(KC_Z)
-#else
-  #define U_RDO KC_AGIN
-  #define U_PST S(KC_INS)
-  #define U_CPY C(KC_INS)
-  #define U_CUT S(KC_DEL)
-  #define U_UND KC_UNDO
 #endif
