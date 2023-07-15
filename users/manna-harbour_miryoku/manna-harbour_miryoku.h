@@ -26,7 +26,6 @@ MIRYOKU_LAYER_LIST
 #define U_NA KC_NO // present but not available for use
 #define U_NU KC_NO // available but not used
 
-
 #define WS1 LGUI(KC_1)
 #define WS2 LGUI(KC_2)
 #define WS3 LGUI(KC_3)

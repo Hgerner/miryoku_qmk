@@ -8,29 +8,6 @@
 #include "manna-harbour_miryoku.h"
 #include "keymap_swedish.h"
 
-
-#if 0
-void keyboard_post_init_user(void) {
-  // Customise these values to desired behaviour
-  //debug_enable=true;
-  //debug_matrix=true;
-  //debug_keyboard=true;
-  //debug_mouse=true;
-}
-
-const uint16_t PROGMEM test_combo1[] = {SE_L,               SE_U, COMBO_END};
-const uint16_t PROGMEM test_combo2[] = {RSFT_T(KC_N),       LCTL_T(KC_E), COMBO_END};
-const uint16_t PROGMEM test_combo3[] = {SE_H,               KC_COMM, COMBO_END};
-
-combo_t key_combos[COMBO_COUNT] = {
-    COMBO(test_combo1, SE_ARNG),
-    COMBO(test_combo2, SE_ADIA),
-    COMBO(test_combo3, SE_ODIA),
-
-
-};
-#endif
-
 enum {
     TD_WS1 = 0,
     TD_WS2,
@@ -41,7 +18,7 @@ enum {
     TD_SCREEN1,
     TD_SCREEN2,
     TD_SCREEN3,
-    TD_FOCUS_SWAP_MASTER
+    TD_FOCUS_SWAP_MASTER,
 };
 
 enum custom_keycodes {
@@ -49,8 +26,12 @@ enum custom_keycodes {
     PLUS_MINUS,
     ASTR_SLSH,
     COMM_EQL,
-    SLSH_BSLS
-
+    SLSH_BSLS,
+    KC_SYM_SLSH,
+    MY_TILD,
+    MY_CIRC,
+    MY_GRV,
+    MY_ACUT,
 };
 
 bool caps_word_press_user(uint16_t keycode) {
@@ -86,6 +67,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     
     uint16_t shifted = 0;
     uint16_t regular = 0;
+    static uint16_t sym_slsh_timer;
 
     qk_tap_dance_action_t *action;
     switch (keycode) {
@@ -126,11 +108,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 regular = SE_COMM; 
                 shifted = SE_EQL; 
             }
-        case SLSH_BSLS:
-            if (!shifted) {
-                regular = SE_SLSH;
-                shifted = SE_BSLS;
-            }
             const uint8_t mods = get_mods();
             if (record->event.pressed) {
                 if ((mods) & MOD_MASK_SHIFT) {
@@ -142,6 +119,47 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     tap_code16(regular);
                 }
             }
+            break;
+        case MY_TILD:
+            tap_code16(SE_TILD);
+            break;
+        case MY_CIRC:
+            tap_code16(SE_CIRC);
+            break;
+        case MY_GRV:
+            tap_code16(SE_GRV);
+            break;
+        case MY_ACUT:
+            tap_code16(SE_ACUT);
+            break;
+
+        case KC_SYM_SLSH:
+            if (!shifted) {
+                regular = SE_SLSH;
+                shifted = SE_BSLS;
+            }
+            if(record->event.pressed){
+                sym_slsh_timer = timer_read();
+                layer_on(U_SYM2);
+            } else {
+                layer_off(U_SYM2);
+                if (timer_elapsed(sym_slsh_timer) < TAPPING_TERM) {
+                    if (!shifted) {
+                        regular = SE_SLSH;
+                        shifted = SE_BSLS;
+                    }
+                    const uint8_t mods = get_mods();
+                    if ((mods) & MOD_MASK_SHIFT) {
+                        unregister_code16(KC_LSFT);
+                        tap_code16(shifted);
+                        register_code16(KC_LSFT);
+                    }
+                    else {
+                        tap_code16(regular);
+                    }
+                }
+            }
+        return false;
 
             return false;
         break;
@@ -149,7 +167,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
    
     return true;
 }
-
 
 void tap_dance_tap_hold_finished(qk_tap_dance_state_t *state, void *user_data) {
     tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)user_data;
