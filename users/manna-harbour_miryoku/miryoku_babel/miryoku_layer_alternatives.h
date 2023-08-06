@@ -24,7 +24,7 @@ U_NP, LT(U_WM,KC_Z),     ALGR_T(KC_X),      KC_C,              KC_V,            
 
 
 #define MIRYOKU_ALTERNATIVES_NAV \
-U_NP, RESET,             U_NP,      DF(U_EXTRA),       DF(U_BASE),        U_NA,              U_NP,              SE_ARNG,           U_NP,    U_NP,           SE_QUES,                  U_NP, \
+U_NP, RESET,             U_NP,              DF(U_EXTRA),       DF(U_BASE),        U_NA,              U_NP,              LCTL(SE_PLUS),     LCTL(SE_MINS),     U_NP,              SE_QUES,                  U_NP, \
 U_NP, KC_LGUI,           KC_LALT,           KC_LCTL,           KC_LSFT,           U_NA,              KC_CAPS,           KC_LEFT,           KC_DOWN,           KC_UP,             KC_RGHT,                  U_NP, \
 U_NP, U_NA,              KC_ALGR,           DF(U_NUM_FLIP),    DF(U_NAV),         U_NA,              KC_INS,            KC_HOME,           KC_PGDN,           KC_PGUP,           KC_END,                   U_NP, \
                                             U_NA,              U_NA,              U_NA,              KC_ENT,            KC_BSPC,           KC_DEL
