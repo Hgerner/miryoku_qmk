@@ -35,26 +35,26 @@ enum custom_keycodes {
 };
 
 bool caps_word_press_user(uint16_t keycode) {
-  switch (keycode) {
-    // Keycodes that continue Caps Word, with shift applied.
-    case SE_A ... SE_Z:
-    case SE_ARNG:
-    case SE_ADIA:
-    case SE_ODIA:
-        add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to the next key.
-      return true;
+    switch (keycode) {
+        // Keycodes that continue Caps Word, with shift applied.
+        case SE_A ... SE_Z:
+        case SE_ARNG:
+        case SE_ADIA:
+        case SE_ODIA:
+            add_weak_mods(MOD_BIT(KC_LSFT)); // Apply shift to the next key.
+            return true;
 
-    // Keycodes that continue Caps Word, without shifting.
-    case SE_1 ... SE_0:
-    case KC_BSPC:
-    case KC_DEL:
-    case SE_MINS:
-    case SE_UNDS:
-      return true;
+        // Keycodes that continue Caps Word, without shifting.
+        case SE_1 ... SE_0:
+        case KC_BSPC:
+        case KC_DEL:
+        case SE_MINS:
+        case SE_UNDS:
+            return true;
 
-    default:
-      return false;  // Deactivate Caps Word.
-  }
+        default:
+            return false; // Deactivate Caps Word.
+    }
 }
 
 typedef struct {
@@ -64,9 +64,8 @@ typedef struct {
 } tap_dance_tap_hold_t;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    
-    uint16_t shifted = 0;
-    uint16_t regular = 0;
+    uint16_t        shifted = 0;
+    uint16_t        regular = 0;
     static uint16_t sym_slsh_timer;
 
     qk_tap_dance_action_t *action;
@@ -87,35 +86,34 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)action->user_data;
                 tap_code16(tap_hold->tap);
             }
-        break;
+            break;
         case QUOT_DQUO:
             if (!shifted) {
-                regular = SE_QUOT; 
-                shifted = SE_DQUO; 
+                regular = SE_QUOT;
+                shifted = SE_DQUO;
             }
         case ASTR_SLSH:
             if (!shifted) {
-                regular = SE_ASTR; 
-                shifted = SE_SLSH; 
+                regular = SE_ASTR;
+                shifted = SE_SLSH;
             }
         case PLUS_MINUS:
             if (!shifted) {
-                regular = SE_PLUS; 
-                shifted = SE_MINS; 
+                regular = SE_PLUS;
+                shifted = SE_MINS;
             }
         case COMM_EQL:
             if (!shifted) {
-                regular = SE_COMM; 
-                shifted = SE_EQL; 
+                regular = SE_COMM;
+                shifted = SE_EQL;
             }
             const uint8_t mods = get_mods();
             if (record->event.pressed) {
-                if ((mods) & MOD_MASK_SHIFT) {
+                if ((mods)&MOD_MASK_SHIFT) {
                     unregister_code16(KC_LSFT);
-                    tap_code16(shifted); 
+                    tap_code16(shifted);
                     register_code16(KC_LSFT);
-                }
-                else {
+                } else {
                     tap_code16(regular);
                 }
             }
@@ -138,7 +136,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 regular = SE_SLSH;
                 shifted = SE_BSLS;
             }
-            if(record->event.pressed){
+            if (record->event.pressed) {
                 sym_slsh_timer = timer_read();
                 layer_on(U_SYM2);
             } else {
@@ -149,22 +147,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                         shifted = SE_BSLS;
                     }
                     const uint8_t mods = get_mods();
-                    if ((mods) & MOD_MASK_SHIFT) {
+                    if ((mods)&MOD_MASK_SHIFT) {
                         unregister_code16(KC_LSFT);
                         tap_code16(shifted);
                         register_code16(KC_LSFT);
-                    }
-                    else {
+                    } else {
                         tap_code16(regular);
                     }
                 }
             }
-        return false;
+            return false;
 
             return false;
-        break;
+            break;
     }
-   
+
     return true;
 }
 
@@ -199,53 +196,38 @@ void tap_dance_tap_hold_reset(qk_tap_dance_state_t *state, void *user_data) {
     { .fn = {NULL, tap_dance_tap_hold_finished, tap_dance_tap_hold_reset}, .user_data = (void *)&((tap_dance_tap_hold_t){tap, hold, 0}), }
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [TD_WS1] = ACTION_TAP_DANCE_TAP_HOLD(WS1, WS1_SFT),
-    [TD_WS2] = ACTION_TAP_DANCE_TAP_HOLD(WS2, WS2_SFT),
-    [TD_WS3] = ACTION_TAP_DANCE_TAP_HOLD(WS3, WS3_SFT),
-    [TD_WS4] = ACTION_TAP_DANCE_TAP_HOLD(WS4, WS4_SFT),
-    [TD_WS5] = ACTION_TAP_DANCE_TAP_HOLD(WS5, WS5_SFT),
-    [TD_WS6] = ACTION_TAP_DANCE_TAP_HOLD(WS6, WS6_SFT),
-    [TD_SCREEN1] = ACTION_TAP_DANCE_TAP_HOLD(SCREEN1_GO, SCREEN1_MOVE),
-    [TD_SCREEN2] = ACTION_TAP_DANCE_TAP_HOLD(SCREEN2_GO, SCREEN2_MOVE),
-    [TD_SCREEN3] = ACTION_TAP_DANCE_TAP_HOLD(SCREEN3_GO, SCREEN3_MOVE),
-    [TD_FOCUS_SWAP_MASTER] = ACTION_TAP_DANCE_TAP_HOLD(MASTER_FOCUS, MASTER_SWAP),
+    [TD_WS1] = ACTION_TAP_DANCE_TAP_HOLD(WS1, WS1_SFT), [TD_WS2] = ACTION_TAP_DANCE_TAP_HOLD(WS2, WS2_SFT), [TD_WS3] = ACTION_TAP_DANCE_TAP_HOLD(WS3, WS3_SFT), [TD_WS4] = ACTION_TAP_DANCE_TAP_HOLD(WS4, WS4_SFT), [TD_WS5] = ACTION_TAP_DANCE_TAP_HOLD(WS5, WS5_SFT), [TD_WS6] = ACTION_TAP_DANCE_TAP_HOLD(WS6, WS6_SFT), [TD_SCREEN1] = ACTION_TAP_DANCE_TAP_HOLD(SCREEN1_GO, SCREEN1_MOVE), [TD_SCREEN2] = ACTION_TAP_DANCE_TAP_HOLD(SCREEN2_GO, SCREEN2_MOVE), [TD_SCREEN3] = ACTION_TAP_DANCE_TAP_HOLD(SCREEN3_GO, SCREEN3_MOVE), [TD_FOCUS_SWAP_MASTER] = ACTION_TAP_DANCE_TAP_HOLD(MASTER_FOCUS, MASTER_SWAP),
 };
-
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define MIRYOKU_X(LAYER, STRING) [U_##LAYER] = U_MACRO_VA_ARGS(MIRYOKU_LAYERMAPPING_##LAYER, MIRYOKU_LAYER_##LAYER),
-MIRYOKU_LAYER_LIST
+    MIRYOKU_LAYER_LIST
 #undef MIRYOKU_X
 };
 
-
-
-
-#if defined (MIRYOKU_KLUDGE_THUMBCOMBOS)
+#if defined(MIRYOKU_KLUDGE_THUMBCOMBOS)
 const uint16_t PROGMEM thumbcombos_base_right[] = {LT(U_SYM, KC_ENT), LT(U_NUM, KC_BSPC), COMBO_END};
-const uint16_t PROGMEM thumbcombos_base_left[] = {LT(U_NAV, KC_SPC), LT(U_MOUSE, KC_TAB), COMBO_END};
-const uint16_t PROGMEM thumbcombos_nav[] = {KC_ENT, KC_BSPC, COMBO_END};
-const uint16_t PROGMEM thumbcombos_mouse[] = {KC_BTN2, KC_BTN1, COMBO_END};
-const uint16_t PROGMEM thumbcombos_media[] = {KC_MSTP, KC_MPLY, COMBO_END};
-const uint16_t PROGMEM thumbcombos_num[] = {KC_0, KC_MINS, COMBO_END};
-  #if defined (MIRYOKU_LAYERS_FLIP)
+const uint16_t PROGMEM thumbcombos_base_left[]  = {LT(U_NAV, KC_SPC), LT(U_MOUSE, KC_TAB), COMBO_END};
+const uint16_t PROGMEM thumbcombos_nav[]        = {KC_ENT, KC_BSPC, COMBO_END};
+const uint16_t PROGMEM thumbcombos_mouse[]      = {KC_BTN2, KC_BTN1, COMBO_END};
+const uint16_t PROGMEM thumbcombos_media[]      = {KC_MSTP, KC_MPLY, COMBO_END};
+const uint16_t PROGMEM thumbcombos_num[]        = {KC_0, KC_MINS, COMBO_END};
+#    if defined(MIRYOKU_LAYERS_FLIP)
 const uint16_t PROGMEM thumbcombos_sym[] = {KC_UNDS, KC_LPRN, COMBO_END};
-  #else
+#    else
 const uint16_t PROGMEM thumbcombos_sym[] = {KC_RPRN, KC_UNDS, COMBO_END};
-  #endif
-const uint16_t PROGMEM thumbcombos_fun[] = {KC_SPC, KC_TAB, COMBO_END};
-combo_t key_combos[COMBO_COUNT] = {
-  COMBO(thumbcombos_base_right, LT(U_FUN, KC_DEL)),
-  COMBO(thumbcombos_base_left, LT(U_MEDIA, KC_ESC)),
-  COMBO(thumbcombos_nav, KC_DEL),
-  COMBO(thumbcombos_mouse, KC_BTN3),
-  COMBO(thumbcombos_media, KC_MUTE),
-  COMBO(thumbcombos_num, KC_DOT),
-  #if defined (MIRYOKU_LAYERS_FLIP)
-  COMBO(thumbcombos_sym, KC_RPRN),
-  #else
-  COMBO(thumbcombos_sym, KC_LPRN),
-  #endif
-  COMBO(thumbcombos_fun, KC_APP)
-};
+#    endif
+const uint16_t PROGMEM thumbcombos_fun[]       = {KC_SPC, KC_TAB, COMBO_END};
+combo_t                key_combos[COMBO_COUNT] = {COMBO(thumbcombos_base_right, LT(U_FUN, KC_DEL)),
+                                                  COMBO(thumbcombos_base_left, LT(U_MEDIA, KC_ESC)),
+                                                  COMBO(thumbcombos_nav, KC_DEL),
+                                                  COMBO(thumbcombos_mouse, KC_BTN3),
+                                                  COMBO(thumbcombos_media, KC_MUTE),
+                                                  COMBO(thumbcombos_num, KC_DOT),
+#    if defined(MIRYOKU_LAYERS_FLIP)
+                                   COMBO(thumbcombos_sym, KC_RPRN),
+#    else
+                                    COMBO(thumbcombos_sym, KC_LPRN),
+#    endif
+                                                  COMBO(thumbcombos_fun, KC_APP)};
 #endif
