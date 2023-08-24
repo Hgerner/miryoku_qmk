@@ -6,16 +6,15 @@
 
 #pragma once
 
-#if !defined (MIRYOKU_LAYER_LIST)
+#if !defined(MIRYOKU_LAYER_LIST)
 
-#define MIRYOKU_LAYER_LIST \
-MIRYOKU_X(BASE,    "Base") \
-MIRYOKU_X(EXTRA,   "Extra") \
-MIRYOKU_X(NAV,     "Nav") \
-MIRYOKU_X(NUM_FLIP,"Num_flip") \
-MIRYOKU_X(SYM,     "Sym") \
-MIRYOKU_X(SYM2,    "Sym2") \
-MIRYOKU_X(SYM3,    "Sym3") \
-MIRYOKU_X(FUN,     "Fun") \
-MIRYOKU_X(WM,      "WM")
+#    define MIRYOKU_LAYER_LIST  \
+        MIRYOKU_X(BASE, "Base") \
+        MIRYOKU_X(NAV, "Nav")   \
+        MIRYOKU_X(NUM, "Num")   \
+        MIRYOKU_X(SYM, "Sym")   \
+        MIRYOKU_X(SYM2, "Sym2") \
+        MIRYOKU_X(SYM3, "Sym3") \
+        MIRYOKU_X(FUN, "Fun")   \
+        MIRYOKU_X(WM, "WM")
 #endif
